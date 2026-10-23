@@ -1,11 +1,7 @@
-package com.example.contentmanagement.service;
+package service;
 
-import com.example.contentmanagement.dto.FeedbackCreateRequestDTO;
-import com.example.contentmanagement.dto.FeedbackUpdateRequestDTO;
-import com.example.contentmanagement.entity.Feedback;
-import org.springframework.web.multipart.MultipartFile;
+import entity.Feedback;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface FeedbackService {
@@ -14,19 +10,9 @@ public interface FeedbackService {
 
     List<Feedback> getByWatchParty(String watchPartyId);
 
-    Feedback create(FeedbackCreateRequestDTO request);
+    Feedback create(Feedback feedback);
 
-    Feedback update(String id, FeedbackUpdateRequestDTO request);
+    Feedback update(String id, Feedback feedback);
 
     void delete(String id);
-
-    Feedback like(String id, String userId);
-
-    Feedback dislike(String id, String userId);
-
-    Feedback createWithAudio(int note,
-                             String commentaire,
-                             String watchPartyId,
-                             MultipartFile audioFile,
-                             String clientId) throws IOException;
 }
