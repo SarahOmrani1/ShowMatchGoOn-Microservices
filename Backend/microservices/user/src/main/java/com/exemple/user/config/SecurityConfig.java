@@ -29,8 +29,15 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Autorise l'authentification
-                        .requestMatchers("/api/users/**").permitAll() // Autorise les CRUD
+                        // 1. Autoriser l'accès à Swagger sans token
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+                        // 2. Vos routes métiers
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().permitAll()
                 );
         return http.build();
