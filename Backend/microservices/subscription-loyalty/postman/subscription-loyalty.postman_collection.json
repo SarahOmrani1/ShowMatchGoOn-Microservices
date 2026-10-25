@@ -1,0 +1,74 @@
+{
+  "info": {
+    "name": "Subscription Loyalty CRUD",
+    "description": "Tests CRUD abonnement et fidélité. Lancer chaque dossier dans l'ordre; les identifiants sont enregistrés automatiquement après création.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8083" },
+    { "key": "abonnementId", "value": "" },
+    { "key": "fidelityId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Abonnements",
+      "item": [
+        {
+          "name": "Créer abonnement",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Création réussie', function () { pm.response.to.have.status(200); });", "const body = pm.response.json();", "pm.expect(body.id).to.be.a('string').and.not.empty;", "pm.collectionVariables.set('abonnementId', body.id);"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"type\": \"BASIC\",\n  \"prix\": 19.99,\n  \"description\": \"Abonnement de test Postman\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/abonnements" }
+        },
+        {
+          "name": "Lister abonnements",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Liste disponible', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json()).to.be.an('array');"] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/abonnements" }
+        },
+        {
+          "name": "Lire abonnement par ID",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Abonnement trouvé', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('abonnementId'));"] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/abonnements/{{abonnementId}}" }
+        },
+        {
+          "name": "Modifier abonnement",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Modification réussie', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json().type).to.eql('PREMIUM');"] } }],
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"type\": \"PREMIUM\",\n  \"prix\": 29.99,\n  \"description\": \"Abonnement modifie depuis Postman\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/abonnements/{{abonnementId}}" }
+        },
+        {
+          "name": "Supprimer abonnement",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Suppression réussie', function () { pm.expect([200, 204]).to.include(pm.response.code); });"] } }],
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/abonnements/{{abonnementId}}" }
+        }
+      ]
+    },
+    {
+      "name": "Fidélités",
+      "item": [
+        {
+          "name": "Créer fidélité",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Création réussie', function () { pm.response.to.have.status(200); });", "const body = pm.response.json();", "pm.expect(body.id).to.be.a('string').and.not.empty;", "pm.collectionVariables.set('fidelityId', body.id);"] } }],
+          "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"points\": 100,\n  \"level\": \"BRONZE\",\n  \"description\": \"Fidelite de test Postman\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/fidelities" }
+        },
+        {
+          "name": "Lister fidélités",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Liste disponible', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json()).to.be.an('array');"] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/fidelities" }
+        },
+        {
+          "name": "Lire fidélité par ID",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Fidélité trouvée', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('fidelityId'));"] } }],
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/fidelities/{{fidelityId}}" }
+        },
+        {
+          "name": "Modifier fidélité",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Modification réussie', function () { pm.response.to.have.status(200); });", "pm.expect(pm.response.json().level).to.eql('SILVER');"] } }],
+          "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"points\": 250,\n  \"level\": \"SILVER\",\n  \"description\": \"Fidelite modifiee depuis Postman\"\n}", "options": { "raw": { "language": "json" } } }, "url": "{{baseUrl}}/api/fidelities/{{fidelityId}}" }
+        },
+        {
+          "name": "Supprimer fidélité",
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Suppression réussie', function () { pm.expect([200, 204]).to.include(pm.response.code); });"] } }],
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/fidelities/{{fidelityId}}" }
+        }
+      ]
+    }
+  ]
+}
