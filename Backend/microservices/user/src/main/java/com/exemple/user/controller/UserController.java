@@ -1,6 +1,9 @@
 package com.exemple.user.controller;
 
+import com.exemple.user.dto.ReportDTO;
 import com.exemple.user.dto.UserDTO;
+import com.exemple.user.exception.ResourceNotFoundException;
+import com.exemple.user.feignClient.ModerationClient;
 import com.exemple.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -83,4 +86,26 @@ public class UserController {
     public ResponseEntity<Boolean> isEmailAvailable(@PathVariable String email) {
         return ResponseEntity.ok(!userService.existsByEmail(email));
     }
+
+
+
+    // Injecter le client Feign
+    private final ModerationClient moderationClient;
+
+    // Endpoint enrichi combinant User + Moderation
+    @GetMapping("/{id}/full-profile")
+    public ResponseEntity<?> getUserFullProfile(@PathVariable Long id) {
+        UserDTO user = userService.getUserById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        // Appel Est-Ouest via Feign vers MODERATION-SERVICE
+        List<ReportDTO> reports = moderationClient.getReportsByUserId(id);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", user);
+        response.put("reports", reports);
+
+        return ResponseEntity.ok(response);
+    }
+
 }

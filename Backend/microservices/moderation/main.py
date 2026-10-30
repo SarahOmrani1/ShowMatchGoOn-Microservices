@@ -181,7 +181,21 @@ def get_user_sanctions(user_id: int):
     conn.close()
     return [SanctionResponse(id=r[0], user_id=r[1], sanction_type=r[2],
         reason=r[3], duration_days=r[4], applied_at=r[5]) for r in rows]
+@app.get("/api/reports/user/{user_id}", response_model=List[ReportResponse], tags=["Signalements"])
+def get_reports_by_user(user_id: int):
+    """Lister tous les signalements concernant un utilisateur (appelé par USER via OpenFeign)."""
+    conn = sqlite3.connect("moderation.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, reported_user_id, reported_by_id, reason, description, status, created_at FROM reports WHERE reported_user_id = ?", (user_id,))
+    rows = cursor.fetchall()
+    conn.close()
+    return [ReportResponse(id=r[0], reported_user_id=r[1], reported_by_id=r[2],
+        reason=r[3], description=r[4], status=r[5], created_at=r[6]) for r in rows]
+
 
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)
+
+
+
