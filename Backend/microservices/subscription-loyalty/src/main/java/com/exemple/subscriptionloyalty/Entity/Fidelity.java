@@ -12,6 +12,10 @@ public class Fidelity {
     @Id
     private String id;
 
+    @NotNull(message = "L'identifiant de l'utilisateur est obligatoire")
+    @Positive(message = "L'identifiant de l'utilisateur doit être positif")
+    private Long userId;
+
     @Min(value = 0, message = "Les points doivent être positifs")
     private int points;
 
@@ -27,6 +31,9 @@ public class Fidelity {
 
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 
     public int getPoints() { return points; }
     public void setPoints(int points) { this.points = points; }
