@@ -42,8 +42,12 @@ public class WatchPartyController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<WatchParty> update(@PathVariable String id, @RequestBody WatchParty watchParty) {
-        return ResponseEntity.ok(watchPartyService.update(id, watchParty));
+    public ResponseEntity<?> update(@PathVariable String id, @RequestBody WatchParty watchParty) {
+        try {
+            return ResponseEntity.ok(watchPartyService.update(id, watchParty));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
