@@ -51,6 +51,13 @@ public class WatchPartyServiceImpl implements WatchPartyService {
 
     @Override
     public WatchParty update(String id, WatchParty watchParty) {
+        try {
+            contentClient.getContentById(watchParty.getContenuId());
+        } catch (FeignException.NotFound e) {
+            throw new IllegalArgumentException("Contenu introuvable : " + watchParty.getContenuId());
+        } catch (FeignException e) {
+            throw new IllegalArgumentException("Service content indisponible");
+        }
         watchParty.setId(id);
         watchParty.setUpdatedAt(new Date());
         return repository.save(watchParty);
