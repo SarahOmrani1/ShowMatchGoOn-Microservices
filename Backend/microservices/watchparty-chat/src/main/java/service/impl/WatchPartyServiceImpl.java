@@ -1,6 +1,8 @@
 package service.impl;
 
+import client.ContentClient;
 import entity.WatchParty;
+import feign.FeignException;
 import repository.FeedbackRepository;
 import repository.WatchPartyRepository;
 import service.WatchPartyService;
@@ -14,10 +16,12 @@ public class WatchPartyServiceImpl implements WatchPartyService {
 
     private final WatchPartyRepository repository;
     private final FeedbackRepository feedbackRepository;
+    private final ContentClient contentClient;
 
-    public WatchPartyServiceImpl(WatchPartyRepository repository, FeedbackRepository feedbackRepository) {
+    public WatchPartyServiceImpl(WatchPartyRepository repository, FeedbackRepository feedbackRepository, ContentClient contentClient) {
         this.repository = repository;
         this.feedbackRepository = feedbackRepository;
+        this.contentClient = contentClient;
     }
 
     @Override
@@ -32,6 +36,13 @@ public class WatchPartyServiceImpl implements WatchPartyService {
 
     @Override
     public WatchParty create(WatchParty watchParty) {
+        try {
+            contentClient.getContentById(watchParty.getContenuId());
+        } catch (FeignException.NotFound e) {
+            throw new IllegalArgumentException("Contenu introuvable : " + watchParty.getContenuId());
+        } catch (FeignException e) {
+            throw new IllegalArgumentException("Service content indisponible");
+        }
         Date now = new Date();
         watchParty.setDateCreation(now);
         watchParty.setUpdatedAt(now);

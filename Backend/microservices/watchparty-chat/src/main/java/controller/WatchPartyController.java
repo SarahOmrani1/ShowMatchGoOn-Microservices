@@ -33,8 +33,12 @@ public class WatchPartyController {
     }
 
     @PostMapping
-    public ResponseEntity<WatchParty> create(@RequestBody WatchParty watchParty) {
-        return new ResponseEntity<>(watchPartyService.create(watchParty), HttpStatus.CREATED);
+    public ResponseEntity<?> create(@RequestBody WatchParty watchParty) {
+        try {
+            return new ResponseEntity<>(watchPartyService.create(watchParty), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
