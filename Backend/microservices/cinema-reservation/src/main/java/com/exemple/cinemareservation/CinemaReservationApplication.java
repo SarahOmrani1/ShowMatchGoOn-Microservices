@@ -2,8 +2,21 @@ package com.exemple.cinemareservation;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"com.exemple.cinemareservation",
+		"controller",
+		"service",
+		"repository",
+		"exception",
+		"client",
+		"dto",
+		"entity"
+})
+@EnableFeignClients(basePackages = "client")
+@EnableMongoRepositories(basePackages = "repository")
 public class CinemaReservationApplication {
 
 	public static void main(String[] args) {
