@@ -1,0 +1,15 @@
+services:
+  rabbitmq:
+    image: rabbitmq:4.2-alpine
+    container_name: showmatch-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-showmatch}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-showmatch-local}
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq-data:

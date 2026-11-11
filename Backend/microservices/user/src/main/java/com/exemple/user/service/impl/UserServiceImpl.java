@@ -166,6 +166,8 @@ public class UserServiceImpl implements UserService {
                 .enabled(user.isEnabled())
                 .fidelityScore(user.getFidelityScore())
                 .fidelityLevel(user.getFidelityLevel())
+                .premiumActive(user.isPremiumActive())
+                .premiumSubscriptionId(user.getPremiumSubscriptionId())
                 .build();
     }
 }

@@ -64,4 +64,9 @@ public class User {
 
     @Builder.Default
     private String fidelityLevel = "BRONZE";
+
+    @Builder.Default
+    private boolean premiumActive = false;
+
+    private String premiumSubscriptionId;
 }
