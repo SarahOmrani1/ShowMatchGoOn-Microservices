@@ -3,10 +3,10 @@ package service.impl;
 import client.ContentClient;
 import entity.WatchParty;
 import feign.FeignException;
+import org.springframework.stereotype.Service;
 import repository.FeedbackRepository;
 import repository.WatchPartyRepository;
 import service.WatchPartyService;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -18,7 +18,9 @@ public class WatchPartyServiceImpl implements WatchPartyService {
     private final FeedbackRepository feedbackRepository;
     private final ContentClient contentClient;
 
-    public WatchPartyServiceImpl(WatchPartyRepository repository, FeedbackRepository feedbackRepository, ContentClient contentClient) {
+    public WatchPartyServiceImpl(WatchPartyRepository repository,
+                                 FeedbackRepository feedbackRepository,
+                                 ContentClient contentClient) {
         this.repository = repository;
         this.feedbackRepository = feedbackRepository;
         this.contentClient = contentClient;
