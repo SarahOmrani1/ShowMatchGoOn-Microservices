@@ -5,8 +5,11 @@ import com.exemple.contentnotification.Entity.*;
 import com.exemple.contentnotification.exception.ResourceNotFoundException;
 import com.exemple.contentnotification.Repository.ContentRepository;
 import com.exemple.contentnotification.Service.ContentService;
+import com.exemple.contentnotification.feignClient.CinemaReservationClient;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tools.jackson.core.type.TypeReference;
@@ -41,6 +44,9 @@ public class ContentServiceImpl implements ContentService {
 
     private final ContentRepository contentRepository;
     private final JsonMapper jsonMapper;
+
+    @Autowired
+    private CinemaReservationClient cinemaReservationClient;   // client Feign vers cinema-reservation
 
     @Value("${app.ai.recommendation-base-url:http://localhost:5055}")
     private String recommendationServiceBaseUrl;
@@ -281,6 +287,32 @@ public class ContentServiceImpl implements ContentService {
         contentRepository.deleteById(id);
     }
 
+    // ==================== COMMUNICATION SYNCHRONE : cinema-reservation (OpenFeign) ====================
+
+    @Override
+    public List<SeanceDTO> getAllSeances() {
+        return cinemaReservationClient.getAllSeances();
+    }
+
+    @Override
+    public SeanceDTO getSeanceById(String seanceId) {
+        try {
+            return cinemaReservationClient.getSeanceById(seanceId);
+        } catch (FeignException.NotFound e) {
+            return null;   // la séance n'existe pas dans cinema-reservation
+        }
+    }
+
+    @Override
+    public List<SeanceDTO> getSeancesForContent(String contentId) {
+        if (!contentRepository.existsById(contentId)) {
+            throw new ResourceNotFoundException("Content not found: " + contentId);
+        }
+        return cinemaReservationClient.getAllSeances().stream()
+                .filter(seance -> contentId.equals(seance.getContenuId()))
+                .collect(Collectors.toList());
+    }
+
     private <T extends Content> T findContentOfType(String id, Class<T> type, String label) {
         return contentRepository.findById(id)
                 .filter(type::isInstance)
@@ -422,9 +454,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private ContentRecommendationDTO toRecommendation(Content content,
-                                                       ContentAnalyticsDTO analytics,
-                                                       Set<String> preferredGenres,
-                                                       LocalDateTime now) {
+                                                      ContentAnalyticsDTO analytics,
+                                                      Set<String> preferredGenres,
+                                                      LocalDateTime now) {
         int viewCount = content.getViewCount() == null ? 0 : content.getViewCount();
         double engagementScore = analytics != null ? analytics.getEngagementScore() : viewCount * 0.7d;
         double popularityScore = Math.log1p(viewCount) * 8.0d;

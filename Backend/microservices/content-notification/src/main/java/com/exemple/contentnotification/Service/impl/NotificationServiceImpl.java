@@ -1,11 +1,14 @@
 package com.exemple.contentnotification.Service.impl;
 
 import com.exemple.contentnotification.dto.NotificationDTO;
+import com.exemple.contentnotification.dto.SanctionDTO;
 import com.exemple.contentnotification.Entity.Notification;
 import com.exemple.contentnotification.exception.ResourceNotFoundException;
 import com.exemple.contentnotification.Repository.NotificationRepository;
 import com.exemple.contentnotification.Service.NotificationService;
+import com.exemple.contentnotification.feignClient.ModerationClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -13,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import jakarta.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +37,9 @@ public class NotificationServiceImpl implements NotificationService {
         this.notificationRepository = notificationRepository;
         this.mailSender = mailSender;
     }
+
+    @Autowired
+    private ModerationClient moderationClient;   // client Feign vers moderation
 
     @Value("${app.notifications.email-fallback-delay-seconds:300}")
     private long emailFallbackDelaySeconds;
@@ -176,6 +183,43 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         return processed;
+    }
+
+    // ==================== COMMUNICATION SYNCHRONE : moderation (OpenFeign) ====================
+
+    @Override
+    public List<SanctionDTO> getSanctionsByUser(Long userId) {
+        return moderationClient.getSanctionsByUserId(userId);
+    }
+
+    @Override
+    public NotificationDTO notifyLatestSanction(Long userId) {
+        List<SanctionDTO> sanctions = moderationClient.getSanctionsByUserId(userId);
+        if (sanctions.isEmpty()) {
+            return null;   // aucune sanction pour cet utilisateur dans moderation
+        }
+
+        SanctionDTO latest = sanctions.stream()
+                .max(Comparator.comparing(SanctionDTO::getId))
+                .get();
+
+        String duration = latest.getDurationDays() != null && latest.getDurationDays() > 0
+                ? " (" + latest.getDurationDays() + " jour(s))"
+                : "";
+
+        Notification notification = Notification.builder()
+                .title("Sanction appliquée à votre compte")
+                .message("Vous avez reçu une sanction " + latest.getSanctionType() + duration
+                        + ". Raison : " + latest.getReason())
+                .type("WARNING")
+                .createdAt(LocalDateTime.now())
+                .emailFallbackDueAt(LocalDateTime.now().plusSeconds(emailFallbackDelaySeconds))
+                .isRead(false)
+                .emailFallbackSent(false)
+                .userId(String.valueOf(userId))
+                .build();
+
+        return mapToDTO(notificationRepository.save(notification));
     }
 
     private boolean isDeliverableEmail(String email) {

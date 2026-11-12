@@ -8,6 +8,7 @@ import com.exemple.contentnotification.dto.PageResponseDTO;
 import com.exemple.contentnotification.dto.FilmDTO;
 import com.exemple.contentnotification.dto.SeriesDTO;
 import com.exemple.contentnotification.dto.DocumentaryDTO;
+import com.exemple.contentnotification.dto.SeanceDTO;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public interface ContentService {
     FilmDTO createFilm(FilmDTO filmDTO, String username);
     SeriesDTO createSeries(SeriesDTO seriesDTO, String username);
     DocumentaryDTO createDocumentary(DocumentaryDTO documentaryDTO, String username);
-    
+
     // ==================== READ ====================
     ContentDTO getContentById(String id);
     List<ContentDTO> getAllContent();
@@ -28,7 +29,7 @@ public interface ContentService {
     List<ContentAnalyticsDTO> getTop10Content(String category, String genreKeyword);
     List<ContentRecommendationDTO> getContentRecommendations(String userId, int limit);
     List<ContentSearchResultDTO> searchContentAdvanced(String keyword, String genreKeyword, String category, int limit);
-    
+
     /**
      * Get paginated and filtered content
      * WHY: Supports large datasets with pagination and filtering
@@ -41,12 +42,17 @@ public interface ContentService {
      * @return Paginated content response
      */
     PageResponseDTO<ContentDTO> getAllContentPaginated(int page, int size, String search, String categoryId, String sortBy, String sortDirection);
-    
+
     // ==================== UPDATE ====================
     FilmDTO updateFilm(String id, FilmDTO filmDTO);
     SeriesDTO updateSeries(String id, SeriesDTO seriesDTO);
     DocumentaryDTO updateDocumentary(String id, DocumentaryDTO documentaryDTO);
-    
+
     // ==================== DELETE ====================
     void deleteContent(String id);
+
+    // ==================== COMMUNICATION SYNCHRONE : cinema-reservation (OpenFeign) ====================
+    List<SeanceDTO> getAllSeances();
+    SeanceDTO getSeanceById(String seanceId);
+    List<SeanceDTO> getSeancesForContent(String contentId);
 }

@@ -27,7 +27,7 @@ public class ContentController {
 
     @PostMapping("/films")
     public ResponseEntity<?> createFilm(@Valid @RequestBody FilmDTO filmDTO,
-            @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
+                                        @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
         String username = resolveUsername(usernameHeader);
         log.info("Creating film: {} by user: {}", filmDTO.getTitle(), username);
         FilmDTO result = contentService.createFilm(filmDTO, username);
@@ -52,7 +52,7 @@ public class ContentController {
 
     @PostMapping("/series")
     public ResponseEntity<?> createSeries(@Valid @RequestBody SeriesDTO seriesDTO,
-            @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
+                                          @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
         String username = resolveUsername(usernameHeader);
         log.info("Creating series: {} by user: {}", seriesDTO.getTitle(), username);
         SeriesDTO result = contentService.createSeries(seriesDTO, username);
@@ -77,7 +77,7 @@ public class ContentController {
 
     @PostMapping("/documentaries")
     public ResponseEntity<?> createDocumentary(@Valid @RequestBody DocumentaryDTO documentaryDTO,
-            @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
+                                               @RequestHeader(value = "X-Username", required = false) String usernameHeader) {
         String username = resolveUsername(usernameHeader);
         log.info("Creating documentary: {} by user: {}", documentaryDTO.getTitle(), username);
         DocumentaryDTO result = contentService.createDocumentary(documentaryDTO, username);
@@ -156,7 +156,7 @@ public class ContentController {
      * Get paginated and filtered content
      * WHY: Supports large datasets with pagination and filtering
      * Allows clients to search, filter by category, and sort results
-     * 
+     *
      * @param page Page number (0-indexed, default 0)
      * @param size Items per page (default 20, max 100)
      * @param search Search query for title/description
@@ -174,6 +174,27 @@ public class ContentController {
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "ASC") String sortDirection) {
         return ResponseEntity.ok(contentService.getAllContentPaginated(page, size, search, categoryId, sortBy, sortDirection));
+    }
+
+    // ==================== COMMUNICATION SYNCHRONE : cinema-reservation (OpenFeign) ====================
+
+    @GetMapping("/seances")
+    public List<SeanceDTO> getAllSeances() {
+        return contentService.getAllSeances();
+    }
+
+    @GetMapping("/seances/{seanceId}")
+    public ResponseEntity<?> getSeanceById(@PathVariable String seanceId) {
+        SeanceDTO seance = contentService.getSeanceById(seanceId);
+        if (seance != null) {
+            return ResponseEntity.ok(seance);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Seance not found with ID: " + seanceId);
+    }
+
+    @GetMapping("/{id}/seances")
+    public List<SeanceDTO> getSeancesForContent(@PathVariable String id) {
+        return contentService.getSeancesForContent(id);
     }
 
     /**

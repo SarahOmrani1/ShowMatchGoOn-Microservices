@@ -1,6 +1,7 @@
 package com.exemple.contentnotification.Controller;
 
 import com.exemple.contentnotification.dto.NotificationDTO;
+import com.exemple.contentnotification.dto.SanctionDTO;
 import com.exemple.contentnotification.Service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +83,22 @@ public class NotificationController {
             log.error("Error deleting notification: {}", e.getMessage(), e);
             return ResponseEntity.badRequest().body("Error deleting notification: " + e.getMessage());
         }
+    }
+
+    // ==================== COMMUNICATION SYNCHRONE : moderation (OpenFeign) ====================
+
+    @GetMapping("/sanctions/user/{userId}")
+    public List<SanctionDTO> getSanctionsByUser(@PathVariable Long userId) {
+        return notificationService.getSanctionsByUser(userId);
+    }
+
+    @PostMapping("/sanctions/user/{userId}")
+    public ResponseEntity<?> notifyLatestSanction(@PathVariable Long userId) {
+        NotificationDTO notification = notificationService.notifyLatestSanction(userId);
+        if (notification != null) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(notification);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No sanction found for user: " + userId);
     }
 
     @PostMapping("/test/trigger-email-fallback")
