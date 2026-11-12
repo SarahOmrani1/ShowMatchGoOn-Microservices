@@ -44,4 +44,6 @@ public class UserDTO {
     private Boolean enabled;
     private Double fidelityScore;
     private String fidelityLevel;
+    private Boolean premiumActive;
+    private String premiumSubscriptionId;
 }

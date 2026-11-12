@@ -33,19 +33,20 @@ public class GatewayApplication {
                         .uri("lb://CONTENT-NOTIFICATION"))
                 // 4. Microservice SUBSCRIPTION-LOYALTY
                 .route("subscription-loyalty-service", r -> r
-                        .path("/api/subscriptions/**", "/api/loyalty/**")
+                        .path("/api/subscriptions/**", "/api/loyalty/**",
+                                "/api/abonnements/**", "/api/fidelities/**")
                         .uri("lb://SUBSCRIPTION-LOYALTY"))
                 // 5. Microservice WATCHPARTY-CHAT
                 .route("watchparty-chat-service", r -> r
-                        .path("/api/watchparties/**", "/api/chat/**")
+                        .path("/api/watchparties/**", "/api/chat/**", "/api/watchparty/premium/entitlements/**")
                         .uri("lb://WATCHPARTY-CHAT"))
                 // 6. Microservice CINEMA-RESERVATION
                 .route("cinema-reservation-service", r -> r
-                        .path("/api/cinemas/**", "/api/reservations/**")
+                        .path("/api/cinemas/**", "/api/reservations/**", "/api/cinema/premium/entitlements/**")
                         .uri("lb://CINEMA-RESERVATION"))
                 // 7. Microservice FORUM-PROMOTION
                 .route("forum-promotion-service", r -> r
-                        .path("/api/forums/**", "/api/promotions/**")
+                        .path("/api/forums/**", "/api/promotions/**", "/api/forum/premium/entitlements/**")
                         .uri("lb://FORUM-PROMOTION"))
                 .build();
     }

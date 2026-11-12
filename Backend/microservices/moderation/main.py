@@ -6,7 +6,7 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 import sqlite3
 
-PORT = 8082
+PORT = 8087
 EUREKA_SERVER = "http://localhost:8761/eureka"
 
 def init_db():
