@@ -1,4 +1,4 @@
-package esprit.gateway;
+package esprit.Gateway;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
