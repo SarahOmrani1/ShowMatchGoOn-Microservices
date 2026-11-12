@@ -1,6 +1,6 @@
-package repository;
+package com.exemple.forumpromotion.repository;
 
-import entity.Commentaire;
+import com.exemple.forumpromotion.entity.Commentaire;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface CommentaireRepository extends MongoRepository<Commentaire, String> {

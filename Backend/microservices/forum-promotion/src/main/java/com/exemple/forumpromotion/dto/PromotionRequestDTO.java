@@ -1,4 +1,4 @@
-package dto;
+package com.exemple.forumpromotion.dto;
 
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Max;

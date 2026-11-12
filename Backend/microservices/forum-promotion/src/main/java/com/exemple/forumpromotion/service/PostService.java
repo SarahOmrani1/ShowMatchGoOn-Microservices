@@ -1,7 +1,7 @@
-package service;
+package com.exemple.forumpromotion.service;
 
-import dto.PostRequestDTO;
-import dto.PostResponseDTO;
+import com.exemple.forumpromotion.dto.PostRequestDTO;
+import com.exemple.forumpromotion.dto.PostResponseDTO;
 
 import java.util.List;
 

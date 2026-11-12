@@ -1,4 +1,4 @@
-package dto;
+package com.exemple.forumpromotion.dto;
 
 import lombok.Data;
 

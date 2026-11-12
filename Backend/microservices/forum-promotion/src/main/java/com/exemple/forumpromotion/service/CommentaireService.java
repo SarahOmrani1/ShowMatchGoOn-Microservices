@@ -1,7 +1,7 @@
-package service;
+package com.exemple.forumpromotion.service;
 
-import dto.CommentaireRequestDTO;
-import dto.CommentaireResponseDTO;
+import com.exemple.forumpromotion.dto.CommentaireRequestDTO;
+import com.exemple.forumpromotion.dto.CommentaireResponseDTO;
 
 import java.util.List;
 
