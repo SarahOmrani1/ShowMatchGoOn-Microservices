@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/watchparty")
+@RequestMapping("/api/watchparties")
 public class WatchPartyController {
 
     private final WatchPartyService watchPartyService;
