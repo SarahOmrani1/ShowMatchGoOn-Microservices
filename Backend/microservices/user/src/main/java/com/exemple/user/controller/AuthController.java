@@ -9,7 +9,6 @@ import com.exemple.user.security.JwtTokenProvider;
 import com.exemple.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +39,7 @@ public class AuthController {
                 .firstName(authRequest.getFirstName())
                 .lastName(authRequest.getLastName())
                 .phoneNumber(authRequest.getPhoneNumber())
+                .role(authRequest.getRole())
                 .build();
 
         userService.createUser(userDTO);
@@ -66,6 +66,7 @@ public class AuthController {
         userRepository.save(user);
 
         // Générer le Token JWT
+        assert userDetails != null;
         String token = jwtTokenProvider.generateToken(userDetails, user.getId(), user.getRole());
 
         AuthResponse response = AuthResponse.builder()
