@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication(scanBasePackages = {
 		"com.exemple.watchpartychat",
-		"controller", "service", "entity", "repository", "config", "client"
+		"controller", "service", "entity", "repository", "config", "client", "exception"
 })
 @EnableMongoRepositories(basePackages = "repository")
 @EntityScan(basePackages = "entity")
