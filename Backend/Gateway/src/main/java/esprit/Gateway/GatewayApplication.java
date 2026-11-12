@@ -33,7 +33,9 @@ public class GatewayApplication {
                         .uri("lb://CONTENT-NOTIFICATION"))
                 // 4. Microservice SUBSCRIPTION-LOYALTY
                 .route("subscription-loyalty-service", r -> r
-                        .path("/api/subscriptions/**", "/api/loyalty/**")
+                        .path("/api/subscriptions/**", "/api/loyalty/**",
+                                "/api/fidelities", "/api/fidelities/**",
+                                "/api/abonnements", "/api/abonnements/**")
                         .uri("lb://SUBSCRIPTION-LOYALTY"))
                 // 5. Microservice WATCHPARTY-CHAT
                 .route("watchparty-chat-service", r -> r
