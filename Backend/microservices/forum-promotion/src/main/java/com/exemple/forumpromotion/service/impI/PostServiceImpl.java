@@ -1,10 +1,10 @@
-package service.impI;
+package com.exemple.forumpromotion.service.impI;
 
-import dto.PostRequestDTO;
-import dto.PostResponseDTO;
-import entity.Post;
-import repository.PostRepository;
-import service.PostService;
+import com.exemple.forumpromotion.dto.PostRequestDTO;
+import com.exemple.forumpromotion.dto.PostResponseDTO;
+import com.exemple.forumpromotion.entity.Post;
+import com.exemple.forumpromotion.repository.PostRepository;
+import com.exemple.forumpromotion.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

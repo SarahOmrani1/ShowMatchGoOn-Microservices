@@ -1,9 +1,9 @@
-package service.impI;
-import dto.CommentaireRequestDTO;
-import dto.CommentaireResponseDTO;
-import entity.Commentaire;
-import repository.CommentaireRepository;
-import service.CommentaireService;
+package com.exemple.forumpromotion.service.impI;
+import com.exemple.forumpromotion.dto.CommentaireRequestDTO;
+import com.exemple.forumpromotion.dto.CommentaireResponseDTO;
+import com.exemple.forumpromotion.entity.Commentaire;
+import com.exemple.forumpromotion.repository.CommentaireRepository;
+import com.exemple.forumpromotion.service.CommentaireService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;

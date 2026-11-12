@@ -1,4 +1,4 @@
-package entity;
+package com.exemple.forumpromotion.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,8 @@
-package controller;
+package com.exemple.forumpromotion.controller;
 
-import dto.CommentaireRequestDTO;
-import dto.CommentaireResponseDTO;
-import service.CommentaireService;
+import com.exemple.forumpromotion.dto.CommentaireRequestDTO;
+import com.exemple.forumpromotion.dto.CommentaireResponseDTO;
+import com.exemple.forumpromotion.service.CommentaireService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,8 +1,8 @@
-package controller;
+package com.exemple.forumpromotion.controller;
 
-import dto.PromotionRequestDTO;
-import dto.PromotionResponseDTO;
-import service.PromotionService;
+import com.exemple.forumpromotion.dto.PromotionRequestDTO;
+import com.exemple.forumpromotion.dto.PromotionResponseDTO;
+import com.exemple.forumpromotion.service.PromotionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

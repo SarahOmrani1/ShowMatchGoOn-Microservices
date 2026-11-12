@@ -1,7 +1,7 @@
-package service;
+package com.exemple.forumpromotion.service;
 
-import dto.PromotionRequestDTO;
-import dto.PromotionResponseDTO;
+import com.exemple.forumpromotion.dto.PromotionRequestDTO;
+import com.exemple.forumpromotion.dto.PromotionResponseDTO;
 
 import java.util.List;
 
