@@ -15,8 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 5. Copier tout le code du microservice (main.py, etc.)
 COPY . .
 
-# 6. Port d'écoute de FastAPI
-EXPOSE 8082
+# Port enregistré dans Eureka et utilisé par FastAPI
+EXPOSE 8087
 
-# 7. Lancement du serveur Uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8082"]
+# Lancement du serveur Uvicorn
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8087"]

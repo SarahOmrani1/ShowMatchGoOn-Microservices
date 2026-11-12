@@ -1,0 +1,220 @@
+name: ${COMPOSE_PROJECT_NAME:-showmatchgoon}
+
+x-spring-environment: &spring-environment
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka
+  EUREKA_INSTANCE_PREFERIPADDRESS: "true"
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_USERNAME: ${RABBITMQ_USERNAME}
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
+
+services:
+  mongodb:
+    image: mongo:7.0
+    restart: unless-stopped
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD doit etre defini dans .env}
+      MYSQL_DATABASE: user_db
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+
+  rabbitmq:
+    image: rabbitmq:4.2-management-alpine
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  eureka:
+    build:
+      context: ./Backend/eureka
+      dockerfile: Dockerfile
+    image: showmatch-eureka:local
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+
+  gateway:
+    build:
+      context: ./Backend/Gateway
+      dockerfile: Dockerfile
+    image: showmatch-gateway:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+    depends_on:
+      eureka:
+        condition: service_started
+    ports:
+      - "8888:8888"
+
+  user:
+    build:
+      context: ./Backend/microservices/user
+      dockerfile: Dockerfile
+    image: showmatch-user:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/user_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      eureka:
+        condition: service_started
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+
+  content-notification:
+    build:
+      context: ./Backend/microservices/content-notification
+      dockerfile: Dockerfile
+    image: showmatch-content-notification:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_MONGODB_URI: mongodb://mongodb:27017/content_db
+      APP_NOTIFICATIONS_EMAILFALLBACKENABLED: "false"
+    depends_on:
+      eureka:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+
+  subscription-loyalty:
+    build:
+      context: ./Backend/microservices/subscription-loyalty
+      dockerfile: Dockerfile
+    image: showmatch-subscription-loyalty:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_MONGODB_URI: mongodb://mongodb:27017/subscription_db
+    depends_on:
+      eureka:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+
+  watchparty-chat:
+    build:
+      context: ./Backend/microservices/watchparty-chat
+      dockerfile: Dockerfile
+    image: showmatch-watchparty-chat:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_MONGODB_URI: mongodb://mongodb:27017/watchparty_db
+    depends_on:
+      eureka:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+
+  cinema-reservation:
+    build:
+      context: ./Backend/microservices/cinema-reservation
+      dockerfile: Dockerfile
+    image: showmatch-cinema-reservation:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_MONGODB_URI: mongodb://mongodb:27017/cinema_db
+    depends_on:
+      eureka:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8085:8085"
+
+  forum-promotion:
+    build:
+      context: ./Backend/microservices/forum-promotion
+      dockerfile: Dockerfile
+    image: showmatch-forum-promotion:local
+    restart: unless-stopped
+    environment:
+      <<: *spring-environment
+      SPRING_MONGODB_URI: mongodb://mongodb:27017/forum_db
+    depends_on:
+      eureka:
+        condition: service_started
+      mongodb:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8086:8086"
+
+  moderation:
+    build:
+      context: ./Backend/microservices/moderation
+      dockerfile: Dockerfile
+    image: showmatch-moderation:local
+    restart: unless-stopped
+    environment:
+      PORT: "8087"
+      EUREKA_SERVER: http://eureka:8761/eureka
+      EUREKA_INSTANCE_HOST: moderation
+      MODERATION_DB_PATH: /app/data/moderation.db
+    volumes:
+      - moderation-data:/app/data
+    depends_on:
+      eureka:
+        condition: service_started
+    ports:
+      - "8087:8087"
+
+volumes:
+  mongodb-data:
+  mysql-data:
+  rabbitmq-data:
+  moderation-data:

@@ -8,7 +8,6 @@ WORKDIR /workspace
 # 1. Copier d'abord le pom.xml et télécharger les dépendances
 #    (cette couche est mise en cache tant que le pom.xml ne change pas)
 COPY pom.xml .
-RUN mvn -B dependency:go-offline
 
 # 2. Copier le code source et générer le .jar (sans les tests)
 COPY src ./src
