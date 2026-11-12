@@ -227,6 +227,21 @@ Le repository est actuellement consacré à :
 - la définition de l'architecture Microservices.
 L'intégration du code et des différents services sera réalisée progressivement
 dans les prochaines étapes du projet.
+
+## Lancement avec Docker Compose
+
+Docker Compose démarre Eureka, la Gateway, les microservices, MongoDB, MySQL et RabbitMQ. Le fichier `.env` à la racine contient des identifiants réservés au développement local ; ne les réutilisez pas en production.
+
+```powershell
+docker compose config
+docker compose up --build -d
+docker compose ps
+```
+
+La Gateway est disponible sur `http://localhost:8888`, Eureka sur `http://localhost:8761` et la console RabbitMQ sur `http://localhost:15672`. Les API des microservices sont aussi publiées sur leurs ports `8081` à `8087`.
+
+Pour consulter les journaux : `docker compose logs -f eureka gateway`. Pour arrêter les services sans supprimer les données persistées : `docker compose down`. La suppression des volumes avec `docker compose down -v` efface les bases locales.
+
 👥 Contributors
 - Omrani Sarra
 - Rezgui Wafa
