@@ -3,4 +3,6 @@ target/
 out/
 *.iml
 node_modules/
+.angular/
+dist/
 .env

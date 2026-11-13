@@ -1,12 +1,14 @@
 package service.impl;
 
 import client.ContentClient;
+import client.EurekaAvailabilityChecker;
 import dto.ReservationRequestDTO;
 import dto.ReservationResponseDTO;
 import entity.Salle;
 import entity.Seance;
 import entity.Reservation;
 import exception.ResourceNotFoundException;
+import exception.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
@@ -26,9 +28,11 @@ public class ReservationServiceImpl implements ReservationService {
     private final SalleRepository salleRepository;
     private final SeanceRepository seanceRepository;
     private final ContentClient contentClient;
+    private final EurekaAvailabilityChecker eurekaAvailabilityChecker;
 
     @Override
     public ReservationResponseDTO create(ReservationRequestDTO request) {
+        eurekaAvailabilityChecker.requireAvailable();
         validateContent(request.getContenuId());
         Seance seance = getSeance(request.getSeanceId());
         validateSeanceContent(seance, request.getContenuId());
@@ -101,6 +105,8 @@ public class ReservationServiceImpl implements ReservationService {
             contentClient.getContentById(contentId);
         } catch (FeignException.NotFound exception) {
             throw new ResourceNotFoundException("Content not found with id: " + contentId);
+        } catch (FeignException exception) {
+            throw new ServiceUnavailableException("Content service is unavailable");
         }
     }
 

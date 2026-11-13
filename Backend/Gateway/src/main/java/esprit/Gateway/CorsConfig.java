@@ -24,8 +24,11 @@ public class CorsConfig {
         // 1. Origines autorisées (Angular par défaut : 4200, React : 3000, 5173)
         corsConfig.setAllowedOrigins(Arrays.asList(
                 "http://localhost:4200",
+                "http://127.0.0.1:4200",
                 "http://localhost:3000",
-                "http://localhost:5173"
+                "http://127.0.0.1:3000",
+                "http://localhost:5173",
+                "http://127.0.0.1:5173"
         ));
 
         // 2. Méthodes HTTP autorisées
